@@ -15,6 +15,6 @@ export class UsersService {
   }
 
   async findOne(username: string) {
-    return await this.usersRepository.findOneOrFail({ username });
+    return await this.usersRepository.findOne({ username });
   }
 }
