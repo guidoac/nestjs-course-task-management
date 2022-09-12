@@ -14,7 +14,7 @@ export class UsersService {
     return await this.usersRepository.createUser(authCredentialsDto);
   }
 
-  async findOne(username: string) {
+  async findOne(username: any) {
     return await this.usersRepository.findOne({ username });
   }
 }
