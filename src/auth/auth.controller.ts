@@ -12,15 +12,11 @@ export class AuthController {
     return this.authService.signUp(authCredentialsDto);
   }
 
-  @UseGuards(AuthGuard('local'))
-  @Post('signin')
-  async signin(@Body() authCredentialsDto: AuthCredentialsDto) {
-    return this.authService.login(authCredentialsDto);
-  }
-
   @UseGuards(AuthGuard('jwt'))
-  @Get('teste')
-  getProfile() {
-    return 'deu certo!';
+  @Post('signin')
+  async signin(
+    @Body() authCredentialsDto: AuthCredentialsDto,
+  ): Promise<{ accessToken: string }> {
+    return this.authService.login(authCredentialsDto);
   }
 }
