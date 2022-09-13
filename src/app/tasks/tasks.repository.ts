@@ -1,4 +1,8 @@
-import { UnauthorizedException } from '@nestjs/common';
+import {
+  InternalServerErrorException,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { User } from 'src/app/users/user.entity';
 import { EntityRepository, Repository } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -8,6 +12,7 @@ import { Task } from './task.entity';
 
 @EntityRepository(Task)
 export class TasksRepository extends Repository<Task> {
+  private logger = new Logger('TasksRepository', { timestamp: true });
   async getTasks(filterDto: GetTasksFilterDto, user: User): Promise<Task[]> {
     const query = this.createQueryBuilder('task');
     const { status, search } = filterDto;
@@ -15,7 +20,7 @@ export class TasksRepository extends Repository<Task> {
     query.where({ user });
 
     if (status) {
-      query.andWhere('task.status = :status', { status });
+      query.andWhere('task.staaaaatus = :status', { status });
     }
 
     if (search) {
@@ -25,8 +30,18 @@ export class TasksRepository extends Repository<Task> {
       );
     }
 
-    const tasks = await query.getMany();
-    return tasks;
+    try {
+      const tasks = await query.getMany();
+      return tasks;
+    } catch (err) {
+      this.logger.error(
+        `Failed to get tasks for user ${
+          user.username
+        }. Filters: ${JSON.stringify(filterDto)}`,
+        err.stack,
+      );
+      throw new InternalServerErrorException();
+    }
   }
 
   async getTaskById(id: string, user: User): Promise<Task | null> {
